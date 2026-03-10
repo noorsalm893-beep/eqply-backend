@@ -1,0 +1,147 @@
+import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
+import { MailService } from '../mail/mail.service';
+import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+    private mailService: MailService,
+  ) {}
+
+  async signup(signupDto: SignupDto) {
+    const { name, email, password, role, location } = signupDto;
+
+    const existing = await this.usersService.findByEmail(email);
+    if (existing) throw new BadRequestException('Email already registered');
+
+    if (role === 'vendor' && !location) {
+      throw new BadRequestException('Vendors must provide a location');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await this.usersService.create({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      location: location || null,
+      verificationToken,
+      verificationTokenExpires,
+    });
+
+    await this.mailService.sendVerificationEmail(email, name, verificationToken);
+
+    return { message: 'Account created! Please check your email to verify your account.' };
+  }
+
+  async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
+    const user = await this.usersService.findByEmail(email);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) throw new UnauthorizedException('Invalid credentials');
+
+    if (!user.isVerified) throw new UnauthorizedException('Please verify your email before logging in');
+    if (!user.isActive) throw new UnauthorizedException('Your account has been deactivated');
+
+    await this.usersService.update(user._id, { lastLogin: new Date() });
+
+    const token = this.jwtService.sign({
+      sub: user._id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        location: user.location,
+      },
+    };
+  }
+
+  async verifyAccount(token: string) {
+    const user = await this.usersService.findByVerificationToken(token);
+    if (!user) throw new BadRequestException('Invalid or expired verification token');
+
+    if (new Date() > user.verificationTokenExpires) {
+      throw new BadRequestException('Verification token has expired. Please request a new one.');
+    }
+
+    await this.usersService.update(user._id, {
+      isVerified: true,
+      verificationToken: null,
+      verificationTokenExpires: null,
+    });
+
+    return { message: 'Email verified successfully! You can now log in.' };
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+    const user = await this.usersService.findByEmail(email);
+
+    if (!user) return { message: 'If that email exists, a reset link has been sent.' };
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
+
+    await this.usersService.update(user._id, {
+      passwordResetToken: resetToken,
+      passwordResetExpires: resetExpires,
+    });
+
+    await this.mailService.sendPasswordResetEmail(email, user.name, resetToken);
+
+    return { message: 'If that email exists, a reset link has been sent.' };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { token, newPassword } = resetPasswordDto;
+    const user = await this.usersService.findByResetToken(token);
+
+    if (!user) throw new BadRequestException('Invalid or expired reset token');
+    if (new Date() > user.passwordResetExpires) {
+      throw new BadRequestException('Reset token has expired. Please request a new one.');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    await this.usersService.update(user._id, {
+      password: hashedPassword,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+    });
+
+    return { message: 'Password reset successfully! You can now log in.' };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.usersService.findById(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const userObj = user.toObject();
+    delete userObj.password;
+    delete userObj.verificationToken;
+    delete userObj.passwordResetToken;
+    return userObj;
+  }
+}
