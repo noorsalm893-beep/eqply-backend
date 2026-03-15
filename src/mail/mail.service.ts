@@ -7,11 +7,21 @@ export class MailService {
   private readonly apiKey: string;
   private readonly fromEmail: string;
   private readonly enabled: boolean;
+  private readonly apiUrl: string;
 
   constructor(private readonly configService: ConfigService) {
     this.apiKey = this.configService.get<string>('BREVO_API_KEY') || '';
     this.fromEmail = this.configService.get<string>('MAIL_USER') || '';
-    this.enabled = (this.configService.get<string>('MAIL_ENABLED') ?? 'true') !== 'false';
+    const enabledRaw = (this.configService.get<string>('MAIL_ENABLED') ?? 'true').toLowerCase();
+    this.enabled = enabledRaw !== 'false' && enabledRaw !== '0' && enabledRaw !== 'no';
+    this.apiUrl = this.configService.get<string>('BREVO_API_URL') || 'https://api.brevo.com/v3/smtp/email';
+
+    if (this.enabled && !this.apiKey) {
+      this.logger.error('BREVO_API_KEY is missing. Email sending will fail until it is set on the server.');
+    }
+    if (this.enabled && !this.fromEmail) {
+      this.logger.error('MAIL_USER (sender email) is missing. Email sending will fail until it is set on the server.');
+    }
   }
 
   private async sendEmail(to: string, subject: string, html: string) {
@@ -19,8 +29,10 @@ export class MailService {
       this.logger.warn('Email disabled — skipping send');
       return;
     }
+    if (!this.apiKey) throw new Error('BREVO_API_KEY is missing');
+    if (!this.fromEmail) throw new Error('MAIL_USER (sender email) is missing');
 
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    const response = await fetch(this.apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
