@@ -27,6 +27,12 @@ export class MailService {
     if (this.enabled && !this.fromEmail) {
       this.logger.error('MAIL_USER (sender email) is missing. Email sending will fail until it is set on the server.');
     }
+
+    if (this.enabled) {
+      const kind = this.apiKey.startsWith('xkeysib-') ? 'api' : this.apiKey.startsWith('xsmtpsib-') ? 'smtp' : 'unknown';
+      const keyHint = this.apiKey ? `${this.apiKey.slice(0, 8)}...` : '(missing)';
+      this.logger.log(`Mail enabled via Brevo (${kind} key ${keyHint}), from=${this.fromEmail || '(missing)'}`);
+    }
   }
 
   private async sendEmail(to: string, subject: string, html: string) {
@@ -52,9 +58,9 @@ export class MailService {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      this.logger.error(`Brevo API error: ${error}`);
-      throw new Error(`Email send failed: ${error}`);
+      const errorText = await response.text();
+      this.logger.error(`Brevo API error (status=${response.status}): ${errorText}`);
+      throw new Error(`Email send failed (status=${response.status}): ${errorText}`);
     }
 
     this.logger.log(`Email sent to ${to}`);
