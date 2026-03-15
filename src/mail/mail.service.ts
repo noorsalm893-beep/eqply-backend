@@ -10,14 +10,19 @@ export class MailService {
   private readonly apiUrl: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.apiKey = this.configService.get<string>('BREVO_API_KEY') || '';
-    this.fromEmail = this.configService.get<string>('MAIL_USER') || '';
+    this.apiKey = (this.configService.get<string>('BREVO_API_KEY') || '').trim();
+    this.fromEmail = (this.configService.get<string>('MAIL_USER') || '').trim();
     const enabledRaw = (this.configService.get<string>('MAIL_ENABLED') ?? 'true').toLowerCase();
     this.enabled = enabledRaw !== 'false' && enabledRaw !== '0' && enabledRaw !== 'no';
     this.apiUrl = this.configService.get<string>('BREVO_API_URL') || 'https://api.brevo.com/v3/smtp/email';
 
     if (this.enabled && !this.apiKey) {
       this.logger.error('BREVO_API_KEY is missing. Email sending will fail until it is set on the server.');
+    }
+    if (this.enabled && this.apiKey.startsWith('xsmtpsib-')) {
+      this.logger.error(
+        'BREVO_API_KEY looks like an SMTP key (xsmtpsib-...). For the Brevo HTTP API it must be an API key (xkeysib-...).',
+      );
     }
     if (this.enabled && !this.fromEmail) {
       this.logger.error('MAIL_USER (sender email) is missing. Email sending will fail until it is set on the server.');
