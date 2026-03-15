@@ -15,5 +15,10 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(120)
   location?: string;
-}
 
+  // Store an avatar choice (URL or identifier); no file upload.
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  profilePhoto?: string;
+}
