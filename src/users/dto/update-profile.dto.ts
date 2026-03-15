@@ -11,11 +11,6 @@ export class UpdateProfileDto {
   @MaxLength(40)
   phone?: string;
 
-  @IsOptional()
-  @IsString()
-  @MaxLength(120)
-  location?: string;
-
   // Store an avatar choice (URL or identifier); no file upload.
   @IsOptional()
   @IsString()

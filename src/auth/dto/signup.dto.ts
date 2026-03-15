@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, MinLength, IsEnum } from 'class-validator';
 
 export class SignupDto {
   @IsString()
@@ -16,8 +16,4 @@ export class SignupDto {
   @IsEnum(['student', 'freelancer', 'vendor'])
   @IsNotEmpty()
   role: string;
-
-  @IsOptional()
-  @IsString()
-  location: string;
 }

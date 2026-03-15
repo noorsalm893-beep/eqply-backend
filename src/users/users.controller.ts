@@ -24,7 +24,6 @@ export class UsersController {
     const updated = await this.usersService.update(user._id, {
       ...(dto.name !== undefined ? { name: dto.name } : {}),
       ...(dto.phone !== undefined ? { phone: dto.phone } : {}),
-      ...(dto.location !== undefined ? { location: dto.location } : {}),
       ...(dto.profilePhoto !== undefined ? { profilePhoto: dto.profilePhoto } : {}),
     });
 
@@ -34,6 +33,7 @@ export class UsersController {
     delete obj.password;
     delete obj.verificationToken;
     delete obj.passwordResetToken;
+    delete obj.location;
     return obj;
   }
 
@@ -48,7 +48,6 @@ export class UsersController {
       id: user._id,
       name: user.name,
       role: user.role,
-      location: user.location,
       profilePhoto: user.profilePhoto,
     };
   }

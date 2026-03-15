@@ -21,14 +21,10 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { name, email, password, role, location } = signupDto;
+    const { name, email, password, role } = signupDto;
 
     const existing = await this.usersService.findByEmail(email);
     if (existing) throw new BadRequestException('Email already registered');
-
-    if (role === 'vendor' && !location) {
-      throw new BadRequestException('Vendors must provide a location');
-    }
 
     const hashedPassword = await bcrypt.hash(password, 12);
     const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -39,7 +35,6 @@ export class AuthService {
       email,
       password: hashedPassword,
       role,
-      location: location || null,
       verificationToken,
       verificationTokenExpires,
     });
@@ -92,7 +87,6 @@ export class AuthService {
         email: user.email,
         role: user.role,
         isVerified: user.isVerified,
-        location: user.location,
       },
     };
   }
@@ -193,6 +187,7 @@ export class AuthService {
     delete userObj.password;
     delete userObj.verificationToken;
     delete userObj.passwordResetToken;
+    delete userObj.location;
     return userObj;
   }
 }
