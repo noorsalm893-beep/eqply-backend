@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, NotFoundException, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
@@ -11,6 +11,8 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -41,7 +43,22 @@ export class AuthService {
       verificationTokenExpires,
     });
 
-    await this.mailService.sendVerificationEmail(email, name, verificationToken);
+    try {
+      await this.mailService.sendVerificationEmail(email, name, verificationToken);
+    } catch (err: any) {
+      this.logger.error(`Verification email failed (to=${email}).`, err?.stack || String(err));
+
+      const failOpenRaw = (process.env.MAIL_FAIL_OPEN || '').toLowerCase();
+      const failOpen = failOpenRaw === 'true' || failOpenRaw === '1' || failOpenRaw === 'yes';
+      if (failOpen) {
+        return {
+          message: 'Account created, but we could not send the verification email. Please try again later.',
+          emailSent: false,
+        };
+      }
+
+      throw new ServiceUnavailableException('Email service is temporarily unavailable. Please try again later.');
+    }
 
     return { message: 'Account created! Please check your email to verify your account.' };
   }
@@ -110,7 +127,12 @@ export class AuthService {
       passwordResetExpires: resetExpires,
     });
 
-    await this.mailService.sendPasswordResetEmail(email, user.name, resetToken);
+    try {
+      await this.mailService.sendPasswordResetEmail(email, user.name, resetToken);
+    } catch (err: any) {
+      // Fail closed would leak availability details and break UX; log and respond generically.
+      this.logger.error(`Password reset email failed (to=${email}).`, err?.stack || String(err));
+    }
 
     return { message: 'If that email exists, a reset link has been sent.' };
   }
