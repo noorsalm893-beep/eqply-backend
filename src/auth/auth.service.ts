@@ -6,6 +6,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ResendVerificationDto } from './dto/resend-verification.dto';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
@@ -135,6 +136,34 @@ export class AuthService {
     }
 
     return { message: 'If that email exists, a reset link has been sent.' };
+  }
+
+  async resendVerification(resendVerificationDto: ResendVerificationDto) {
+    const email = resendVerificationDto.email.toLowerCase().trim();
+    const user = await this.usersService.findByEmail(email);
+
+    // Always respond generically to avoid email enumeration.
+    if (!user) return { message: 'If that email exists, a verification email has been sent.' };
+    if (user.isVerified) return { message: 'Account is already verified. Please log in.' };
+
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await this.usersService.update(user._id, { verificationToken, verificationTokenExpires });
+
+    try {
+      await this.mailService.sendVerificationEmail(user.email, user.name, verificationToken);
+    } catch (err: any) {
+      this.logger.error(`Resend verification email failed (to=${email}).`, err?.stack || String(err));
+
+      const failOpenRaw = (process.env.MAIL_FAIL_OPEN || '').toLowerCase();
+      const failOpen = failOpenRaw === 'true' || failOpenRaw === '1' || failOpenRaw === 'yes';
+      if (failOpen) return { message: 'If that email exists, a verification email has been sent.', emailSent: false };
+
+      throw new ServiceUnavailableException('Email service is temporarily unavailable. Please try again later.');
+    }
+
+    return { message: 'If that email exists, a verification email has been sent.' };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
