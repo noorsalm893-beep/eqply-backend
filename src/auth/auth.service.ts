@@ -21,7 +21,7 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { name, email, password, role } = signupDto;
+    const { name, email, password, role, phone, profilePhoto } = signupDto;
 
     const existing = await this.usersService.findByEmail(email);
     if (existing) throw new BadRequestException('Email already registered');
@@ -35,6 +35,8 @@ export class AuthService {
       email,
       password: hashedPassword,
       role,
+      ...(phone ? { phone } : {}),
+      ...(profilePhoto ? { profilePhoto } : {}),
       verificationToken,
       verificationTokenExpires,
     });
