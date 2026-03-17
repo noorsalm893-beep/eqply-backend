@@ -81,17 +81,16 @@ export class MailService {
     `);
   }
 
-  async sendPasswordResetEmail(email: string, name: string, token: string) {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:8081';
-    const resetUrl = `${frontendUrl}/auth/reset-password?token=${token}`;
-    await this.sendEmail(email, 'Reset your Eqply password', `
+  async sendPasswordResetEmail(email: string, name: string, code: string) {
+    await this.sendEmail(email, 'Your Eqply Password Reset Code', `
       <div style="font-family:sans-serif;max-width:480px;margin:auto;padding:32px;background:#1a1a2e;color:#fff;border-radius:12px;">
         <h1 style="color:#ff2d87;">Password Reset 🔐</h1>
-        <p>Hi ${name}, we received a request to reset your password.</p>
-        <a href="${resetUrl}" style="display:inline-block;margin-top:16px;padding:12px 28px;background:#ff2d87;color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;">
-          Reset My Password
-        </a>
-        <p style="margin-top:24px;font-size:12px;color:#aaa;">Link expires in 1 hour.</p>
+        <p>Hi ${name}, here is your 4-digit password reset code:</p>
+        <div style="text-align:center;margin:32px 0;">
+          <span style="font-size:64px;font-weight:bold;letter-spacing:16px;color:#ff2d87;">${code}</span>
+        </div>
+        <p style="color:#aaa;">Enter this code in the app to reset your password.</p>
+        <p style="font-size:12px;color:#aaa;">This code expires in 1 hour. If you didn't request this, ignore this email.</p>
       </div>
     `);
   }
