@@ -8,17 +8,20 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { isValidObjectId } from 'mongoose';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch('profile')
   async updateProfile(@CurrentUser() user: any, @Body() dto: UpdateProfileDto) {
     const updated = await this.usersService.update(user._id, {
