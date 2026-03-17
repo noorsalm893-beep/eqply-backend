@@ -111,28 +111,23 @@ export class AuthService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const { email } = forgotPasswordDto;
-    const user = await this.usersService.findByEmail(email);
+  const { email } = forgotPasswordDto;
+  const user = await this.usersService.findByEmail(email);
 
-    if (!user) return { message: 'If that email exists, a reset link has been sent.' };
+  if (!user) return { message: 'If that email exists, a reset code has been sent.' };
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
+  const resetCode = Math.floor(1000 + Math.random() * 9000).toString();
+  const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
 
-    await this.usersService.update(user._id, {
-      passwordResetToken: resetToken,
-      passwordResetExpires: resetExpires,
-    });
+  await this.usersService.update(user._id, {
+    passwordResetToken: resetCode,
+    passwordResetExpires: resetExpires,
+  });
 
-    try {
-      await this.mailService.sendPasswordResetEmail(email, user.name, resetToken);
-    } catch (err: any) {
-      // Fail closed would leak availability details and break UX; log and respond generically.
-      this.logger.error(`Password reset email failed (to=${email}).`, err?.stack || String(err));
-    }
+  await this.mailService.sendPasswordResetEmail(email, user.name, resetCode);
 
-    return { message: 'If that email exists, a reset link has been sent.' };
-  }
+  return { message: 'If that email exists, a reset code has been sent.' };
+}
 
   async resendVerification(resendVerificationDto: ResendVerificationDto) {
     const email = resendVerificationDto.email.toLowerCase().trim();
