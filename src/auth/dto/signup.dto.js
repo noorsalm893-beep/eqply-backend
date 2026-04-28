@@ -29,6 +29,7 @@ exports.SignupDto = void 0;
 const class_transformer_1 = require('class-transformer');
 const class_validator_1 = require('class-validator');
 const swagger_1 = require('@nestjs/swagger');
+
 class SignupDto {
   name;
   email;
@@ -36,8 +37,10 @@ class SignupDto {
   role;
   phone;
   profilePhoto;
+  location; // ✅ FIX 1 — added location field
 }
 exports.SignupDto = SignupDto;
+
 __decorate(
   [
     (0, swagger_1.ApiProperty)({ example: 'Jane Doe' }),
@@ -116,6 +119,22 @@ __decorate(
   ],
   SignupDto.prototype,
   'profilePhoto',
+  void 0,
+);
+// ✅ FIX 1 — location decorator added
+__decorate(
+  [
+    (0, swagger_1.ApiPropertyOptional)({
+      maxLength: 200,
+      example: 'Cairo, Egypt',
+    }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.MaxLength)(200),
+    __metadata('design:type', String),
+  ],
+  SignupDto.prototype,
+  'location',
   void 0,
 );
 //# sourceMappingURL=signup.dto.js.map

@@ -100,7 +100,7 @@ let AuthService = (AuthService_1 = class AuthService {
     this.mailService = mailService;
   }
   async signup(signupDto) {
-    const { name, email, password, role, phone, profilePhoto } = signupDto;
+    const { name, email, password, role, phone, profilePhoto, location } = signupDto; // ✅ FIX 2 — destructure location
     const existing = await this.usersService.findByEmail(email);
     if (existing)
       throw new common_1.BadRequestException('Email already registered');
@@ -114,6 +114,7 @@ let AuthService = (AuthService_1 = class AuthService {
       role,
       ...(phone ? { phone } : {}),
       ...(profilePhoto ? { profilePhoto } : {}),
+      ...(location ? { location } : {}), // ✅ FIX 2 — save location on signup
       verificationToken,
       verificationTokenExpires,
     });
@@ -176,6 +177,7 @@ let AuthService = (AuthService_1 = class AuthService {
         email: user.email,
         role: user.role,
         isVerified: user.isVerified,
+        location: user.location ?? null, // ✅ FIX 3 — include location in login response
       },
     };
   }
