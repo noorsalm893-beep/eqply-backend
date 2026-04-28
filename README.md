@@ -23,7 +23,7 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) framework JavaScript starter repository.
 
 ## Project setup
 
@@ -37,12 +37,35 @@ $ npm install
 # development
 $ npm run start
 
+# full backend mode (requires MongoDB connectivity)
+$ npm run start:full
+
 # watch mode
 $ npm run start:dev
 
+# full backend mode (requires MongoDB connectivity)
+$ npm run start:dev:full
+
 # production mode
 $ npm run start:prod
+
+# dashboard + swagger only (no MongoDB required)
+$ npm run start:dashboard
+
+# optional watch mode (may fail on strict OS watch limits)
+$ npm run start:dev:watch
 ```
+
+## Dashboard and Swagger
+
+- Dashboard: `http://localhost:3000/dashboard` (also available at `/`)
+- Swagger UI: `http://localhost:3000/api/docs`
+- OpenAPI JSON: `http://localhost:3000/api/docs-json`
+- Health check: `http://localhost:3000/health`
+
+`npm run start` and `npm run start:dev` run in full backend mode (MongoDB enabled) with `MAIL_FAIL_OPEN=true` for local resilience.
+Use `npm run start:dashboard` if you only want dashboard/health/docs without DB.
+When DB is disabled, Swagger still lists all implemented routes (`/api/auth/*`, `/api/users/*`), but DB-backed requests return `503`.
 
 ## Run tests
 
