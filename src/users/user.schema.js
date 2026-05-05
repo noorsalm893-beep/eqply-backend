@@ -33,7 +33,6 @@ let User = class User {
   password;
   role;
   phone;
-  profilePhoto;
   location;
   isVerified;
   isActive;
@@ -97,15 +96,6 @@ __decorate(
   ],
   User.prototype,
   'phone',
-  void 0,
-);
-__decorate(
-  [
-    (0, mongoose_1.Prop)({ type: String, default: null }),
-    __metadata('design:type', String),
-  ],
-  User.prototype,
-  'profilePhoto',
   void 0,
 );
 __decorate(

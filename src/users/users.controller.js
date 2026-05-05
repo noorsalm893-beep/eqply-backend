@@ -49,9 +49,6 @@ let UsersController = class UsersController {
     const updated = await this.usersService.update(user._id, {
       ...(dto.name !== undefined ? { name: dto.name } : {}),
       ...(dto.phone !== undefined ? { phone: dto.phone } : {}),
-      ...(dto.profilePhoto !== undefined
-        ? { profilePhoto: dto.profilePhoto }
-        : {}),
     });
     if (!updated) throw new common_1.NotFoundException('User not found');
     const obj = updated.toObject();
@@ -70,7 +67,6 @@ let UsersController = class UsersController {
       id: user._id,
       name: user.name,
       role: user.role,
-      profilePhoto: user.profilePhoto,
     };
   }
 };

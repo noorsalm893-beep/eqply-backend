@@ -36,7 +36,6 @@ class SignupDto {
   password;
   role;
   phone;
-  profilePhoto;
   location; // ✅ FIX 1 — added location field
 }
 exports.SignupDto = SignupDto;
@@ -104,21 +103,6 @@ __decorate(
   ],
   SignupDto.prototype,
   'phone',
-  void 0,
-);
-__decorate(
-  [
-    (0, swagger_1.ApiPropertyOptional)({
-      maxLength: 500,
-      example: 'https://cdn.example.com/avatar.png',
-    }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(500),
-    __metadata('design:type', String),
-  ],
-  SignupDto.prototype,
-  'profilePhoto',
   void 0,
 );
 // ✅ FIX 1 — location decorator added

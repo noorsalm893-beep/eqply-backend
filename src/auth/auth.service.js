@@ -100,7 +100,8 @@ let AuthService = (AuthService_1 = class AuthService {
     this.mailService = mailService;
   }
   async signup(signupDto) {
-    const { name, email, password, role, phone, profilePhoto, location } = signupDto; // ✅ FIX 2 — destructure location
+    const { name, email, password, role, phone, profilePhoto, location } =
+      signupDto; // ✅ FIX 2 — destructure location
     const existing = await this.usersService.findByEmail(email);
     if (existing)
       throw new common_1.BadRequestException('Email already registered');
@@ -299,4 +300,3 @@ exports.AuthService =
       ],
       AuthService,
     );
-//# sourceMappingURL=auth.service.js.map
