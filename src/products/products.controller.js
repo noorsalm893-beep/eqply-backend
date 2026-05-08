@@ -37,6 +37,18 @@ let ProductsController = class ProductsController {
   getBestDeals() {
     return this.productsService.getBestDeals();
   }
+  getAllProducts() {
+    return this.productsService.getAllProducts();
+  }
+  getCategories() {
+    return this.productsService.getCategories();
+  }
+  searchProducts(query) {
+    return this.productsService.searchProducts(query);
+  }
+  getMyProducts(user) {
+    return this.productsService.getProductsByVendor(user._id);
+  }
 };
 exports.ProductsController = ProductsController;
 __decorate(
@@ -48,6 +60,50 @@ __decorate(
   ],
   ProductsController.prototype,
   'getBestDeals',
+  null,
+);
+__decorate(
+  [
+    (0, common_1.Get)(),
+    __metadata('design:type', Function),
+    __metadata('design:paramtypes', []),
+    __metadata('design:returntype', void 0),
+  ],
+  ProductsController.prototype,
+  'getAllProducts',
+  null,
+);
+__decorate(
+  [
+    (0, common_1.Get)('categories'),
+    __metadata('design:type', Function),
+    __metadata('design:paramtypes', []),
+    __metadata('design:returntype', void 0),
+  ],
+  ProductsController.prototype,
+  'getCategories',
+  null,
+);
+__decorate(
+  [
+    (0, common_1.Get)('search'),
+    __metadata('design:type', Function),
+    __metadata('design:paramtypes', [Object]),
+    __metadata('design:returntype', void 0),
+  ],
+  ProductsController.prototype,
+  'searchProducts',
+  null,
+);
+__decorate(
+  [
+    (0, common_1.Get)('my-products'),
+    __metadata('design:type', Function),
+    __metadata('design:paramtypes', [Object]),
+    __metadata('design:returntype', void 0),
+  ],
+  ProductsController.prototype,
+  'getMyProducts',
   null,
 );
 exports.ProductsController = ProductsController = __decorate(

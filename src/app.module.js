@@ -27,6 +27,10 @@ const auth_module_1 = require('./auth/auth.module');
 const mail_module_1 = require('./mail/mail.module');
 const users_module_1 = require('./users/users.module');
 const products_module_1 = require('./products/products.module');
+const reviews_module_1 = require('./reviews/reviews.module');
+const favorites_module_1 = require('./favorites/favorites.module');
+const orders_module_1 = require('./orders/orders.module');
+const cart_module_1 = require('./cart/cart.module');
 const normalizeBooleanEnv = (value, defaultValue = true) => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;
@@ -47,6 +51,10 @@ const moduleImports = [
   mail_module_1.MailModule,
   auth_module_1.AuthModule,
   products_module_1.ProductsModule,
+  reviews_module_1.ReviewsModule,
+  favorites_module_1.FavoritesModule,
+  orders_module_1.OrdersModule,
+  cart_module_1.CartModule,
 ];
 if (databaseEnabled) {
   moduleImports.push(

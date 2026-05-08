@@ -279,7 +279,7 @@ let AuthService = (AuthService_1 = class AuthService {
     delete userObj.password;
     delete userObj.verificationToken;
     delete userObj.passwordResetToken;
-    delete userObj.location;
+    // Keep location and avatar as requested in user profile info
     return userObj;
   }
 });

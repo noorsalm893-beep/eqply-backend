@@ -69,8 +69,14 @@ let AuthController = class AuthController {
   getProfile(user) {
     return this.authService.getProfile(user._id);
   }
+  logout() {
+    // In a JWT-based auth system, logout is typically handled on the client side
+    // by removing the token. However, we can still provide an endpoint for
+    // invalidating tokens server-side if we implement token blacklisting.
+    // For now, we'll return a success message.
+    return { message: 'Logged out successfully' };
+  }
 };
-exports.AuthController = AuthController;
 __decorate(
   [
     (0, common_1.Post)('signup'),
@@ -157,6 +163,17 @@ __decorate(
   ],
   AuthController.prototype,
   'getProfile',
+  null,
+);
+__decorate(
+  [
+    (0, common_1.Post)('logout'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    __metadata('design:type', Function),
+    __metadata('design:returntype', void 0),
+  ],
+  AuthController.prototype,
+  'logout',
   null,
 );
 exports.AuthController = AuthController = __decorate(

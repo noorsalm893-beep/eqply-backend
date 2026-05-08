@@ -32,63 +32,49 @@ var __param =
     };
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.ProductsService = void 0;
+exports.FavoritesService = void 0;
 const common_1 = require('@nestjs/common');
 const mongoose_1 = require('@nestjs/mongoose');
 const mongoose_2 = require('mongoose');
-const product_schema_1 = require('./product.schema');
-let ProductsService = class ProductsService {
-  productModel;
-  constructor(productModel) {
-    this.productModel = productModel;
+const favorite_schema_1 = require('./favorite.schema');
+let FavoritesService = class FavoritesService {
+  favoriteModel;
+  constructor(favoriteModel) {
+    this.favoriteModel = favoriteModel;
   }
   getModelOrThrow() {
-    if (!this.productModel) {
+    if (!this.favoriteModel) {
       throw new common_1.ServiceUnavailableException(
         'Database is currently disabled or unavailable',
       );
     }
-    return this.productModel;
+    return this.favoriteModel;
   }
-  async getBestDeals() {
-    return this.getModelOrThrow()
-      .find({ bestDeal: true })
-      .limit(4)
-      .exec();
+  async create(createFavoriteData) {
+    const model = this.getModelOrThrow();
+    const favorite = new model(createFavoriteData);
+    return favorite.save();
   }
-  async getAllProducts() {
-    return this.getModelOrThrow().find().exec();
+  async findById(id) {
+    return this.getModelOrThrow().findById(id).exec();
   }
-  async getCategories() {
-    // Return distinct categories
-    return this.getModelOrThrow().distinct('category').exec();
+  async findByUserId(userId) {
+    return this.getModelOrThrow().find({ userId }).populate('productId').exec();
   }
-  async searchProducts(query) {
-    if (!query || query.trim() === '') {
-      return this.getModelOrThrow().find().exec();
-    }
-    return this.getModelOrThrow()
-      .find({
-        $or: [
-          { name: { $regex: query, $options: 'i' } },
-          { description: { $regex: query, $options: 'i' } }
-        ]
-      })
-      .exec();
+  async findByUserIdAndProductId(userId, productId) {
+    return this.getModelOrThrow().findOne({ userId, productId }).exec();
   }
-
-  async getProductsByVendor(vendorId) {
-    return this.getModelOrThrow().find({ 'vendor.vendorId': vendorId }).exec();
+  async remove(userId, productId) {
+    return this.getModelOrThrow().findOneAndDelete({ userId, productId }).exec();
   }
 };
-exports.ProductsService = ProductsService;
-exports.ProductsService = ProductsService = __decorate(
+exports.FavoritesService = FavoritesService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(product_schema_1.Product.name)),
+    __param(0, (0, mongoose_1.InjectModel)(favorite_schema_1.Favorite.name)),
     __param(0, (0, common_1.Optional)()),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
-  ProductsService,
+  FavoritesService,
 );
-//# sourceMappingURL=products.service.js.map
+//# sourceMappingURL=favorites.service.js.map

@@ -109,6 +109,42 @@ __decorate(
 );
 __decorate(
   [
+    (0, mongoose_1.Prop)({ type: String, default: null }),
+    __metadata('design:type', String),
+  ],
+  User.prototype,
+  'avatar',
+  void 0,
+);
+__decorate(
+  [
+    (0, mongoose_1.Prop)({ type: Boolean, default: true }),
+    __metadata('design:type', Boolean),
+  ],
+  User.prototype,
+  'notifications',
+  void 0,
+);
+__decorate(
+  [
+    (0, mongoose_1.Prop)({ type: String, default: 'english' }),
+    __metadata('design:type', String),
+  ],
+  User.prototype,
+  'language',
+  void 0,
+);
+__decorate(
+  [
+    (0, mongoose_1.Prop)({ type: Boolean, default: false }),
+    __metadata('design:type', Boolean),
+  ],
+  User.prototype,
+  'darkMode',
+  void 0,
+);
+__decorate(
+  [
     (0, mongoose_1.Prop)({ type: Boolean, default: false }),
     __metadata('design:type', Boolean),
   ],
