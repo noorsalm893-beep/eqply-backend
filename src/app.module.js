@@ -26,6 +26,7 @@ const config_1 = require('@nestjs/config');
 const auth_module_1 = require('./auth/auth.module');
 const mail_module_1 = require('./mail/mail.module');
 const users_module_1 = require('./users/users.module');
+const products_module_1 = require('./products/products.module');
 const normalizeBooleanEnv = (value, defaultValue = true) => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;
@@ -45,6 +46,7 @@ const moduleImports = [
   users_module_1.UsersModule,
   mail_module_1.MailModule,
   auth_module_1.AuthModule,
+  products_module_1.ProductsModule,
 ];
 if (databaseEnabled) {
   moduleImports.push(

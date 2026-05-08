@@ -176,10 +176,8 @@ let AuthService = (AuthService_1 = class AuthService {
         email: user.email,
         role: user.role,
         isVerified: user.isVerified,
-        location: user.location ?? null, 
-      },Nest] 73653  - 05/04/2026, 12:03:01 PM     LOG [InstanceLoader] ConfigHostModule dependencies initialized +0ms
-[Nest] 73653  - 05/04/2026, 12:03:01 PM   ERROR [MailService] BREVO_API_KEY is missing. Email sending will fail until it is set on the server.
-[Nest] 73653  - 05/04/2026, 12:03:01 PM     LOG [MailService] Mail enabled via Brevo (unknown key (missing)), from=a504b3001@smtp-brevo.com
+        location: user.location ?? null,
+      },
     };
   }
   async verifyAccount(token) {
