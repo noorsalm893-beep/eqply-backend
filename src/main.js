@@ -139,6 +139,7 @@ async function bootstrap() {
     .setTitle('Eqply API')
     .setDescription('Eqply backend API documentation and endpoints')
     .setVersion('1.1.0')
+    .addServer('https://eqply-backend.onrender.com')
     .addTag('auth', 'Authentication and account endpoints')
     .addTag('users', 'User profile and user details endpoints')
     .addBearerAuth()

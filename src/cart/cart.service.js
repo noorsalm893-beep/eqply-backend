@@ -69,57 +69,45 @@ let CartService = class CartService {
     ).exec();
   }
   async addItem(userId, productId, quantity = 1) {
-    const cart = await this.findByUserId(userId);
+    const model = this.getModelOrThrow();
+
+    // Try to increment quantity if the item already exists in the cart
+    const updatedCart = await model.findOneAndUpdate(
+      { userId, 'items.productId': productId },
+      { $inc: { 'items.$.quantity': quantity } },
+      { new: true }
+    ).exec();
+
+    if (updatedCart) return updatedCart;
+
+    // If not found, check if the cart exists
+    const cart = await model.findOne({ userId });
     if (cart) {
-      // Check if item already exists in cart
-      const existingItemIndex = cart.items.findIndex(
-        item => item.productId.toString() === productId
-      );
-      if (existingItemIndex >= 0) {
-        // Update quantity
-        cart.items[existingItemIndex].quantity += quantity;
-        return this.getModelOrThrow().findOneAndUpdate(
-          { userId },
-          { items: cart.items, updatedAt: new Date() },
-          { new: true }
-        ).exec();
-      } else {
-        // Add new item
-        cart.items.push({ productId, quantity });
-        return this.getModelOrThrow().findOneAndUpdate(
-          { userId },
-          { items: cart.items, updatedAt: new Date() },
-          { new: true }
-        ).exec();
-      }
+      // Cart exists but item doesn't, so push new item
+      return model.findOneAndUpdate(
+        { userId },
+        { $push: { items: { productId, quantity } } },
+        { new: true }
+      ).exec();
     } else {
-      // Create new cart
-      const newCart = await this.create({
+      // Cart doesn't exist, create new one
+      return this.create({
         userId,
         items: [{ productId, quantity }],
       });
-      return newCart;
     }
   }
   async removeItem(userId, productId) {
-    const cart = await this.findByUserId(userId);
-    if (cart) {
-      // Remove item from cart
-      cart.items = cart.items.filter(
-        item => item.productId.toString() !== productId
-      );
-      return this.getModelOrThrow().findOneAndUpdate(
-        { userId },
-        { items: cart.items, updatedAt: new Date() },
-        { new: true }
-      ).exec();
-    }
-    return null;
+    return this.getModelOrThrow().findOneAndUpdate(
+      { userId },
+      { $pull: { items: { productId } } },
+      { new: true }
+    ).exec();
   }
   async clearCart(userId) {
     return this.getModelOrThrow().findOneAndUpdate(
       { userId },
-      { items: [], updatedAt: new Date() },
+      { items: [] },
       { new: true }
     ).exec();
   }
