@@ -46,15 +46,33 @@ let CartController = class CartController {
     this.cartService = cartService;
   }
   addToCart(user, addToCartDto) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
+    if (!addToCartDto || !addToCartDto.productId) {
+      throw new common_1.BadRequestException('Product ID is required');
+    }
     return this.cartService.addItem(user._id, addToCartDto.productId, addToCartDto.quantity);
   }
   removeFromCart(user, removeFromCartDto) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
+    if (!removeFromCartDto || !removeFromCartDto.productId) {
+      throw new common_1.BadRequestException('Product ID is required');
+    }
     return this.cartService.removeItem(user._id, removeFromCartDto.productId);
   }
   getCart(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.cartService.findByUserId(user._id);
   }
   clearCart(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.cartService.clearCart(user._id);
   }
 };
