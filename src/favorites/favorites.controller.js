@@ -74,7 +74,8 @@ __decorate(
     (0, common_1.Post)('toggle'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
-    (0, common_1.Body)(),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata('design:type', Function),
     __metadata('design:paramtypes', [
@@ -92,6 +93,7 @@ __decorate(
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata('design:type', Function),
     __metadata('design:paramtypes', [Object]),
