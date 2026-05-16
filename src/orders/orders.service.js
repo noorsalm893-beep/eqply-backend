@@ -124,8 +124,8 @@ let OrdersService = class OrdersService {
 exports.OrdersService = OrdersService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(order_schema_1.Order.name)),
-    __param(0, (0, common_1.Optional)()),
+    __param(0, (0, mongoose_1.InjectModel)(order_schema_1.Order.name), (0, common_1.Optional)()),
+    __param(1, (0, common_1.Inject)()),
     __metadata('design:paramtypes', [mongoose_2.Model, cart_service_1.CartService]),
   ],
   OrdersService,

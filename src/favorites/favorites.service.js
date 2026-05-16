@@ -71,8 +71,7 @@ let FavoritesService = class FavoritesService {
 exports.FavoritesService = FavoritesService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(favorite_schema_1.Favorite.name)),
-    __param(0, (0, common_1.Optional)()),
+    __param(0, (0, mongoose_1.InjectModel)(favorite_schema_1.Favorite.name), (0, common_1.Optional)()),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
   FavoritesService,

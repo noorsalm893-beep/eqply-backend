@@ -79,8 +79,7 @@ let ReviewsService = class ReviewsService {
 exports.ReviewsService = ReviewsService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(review_schema_1.Review.name)),
-    __param(0, (0, common_1.Optional)()),
+    __param(0, (0, mongoose_1.InjectModel)(review_schema_1.Review.name), (0, common_1.Optional)()),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
   ReviewsService,

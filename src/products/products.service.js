@@ -85,8 +85,7 @@ exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(product_schema_1.Product.name)),
-    __param(0, (0, common_1.Optional)()),
+    __param(0, (0, mongoose_1.InjectModel)(product_schema_1.Product.name), (0, common_1.Optional)()),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
   ProductsService,

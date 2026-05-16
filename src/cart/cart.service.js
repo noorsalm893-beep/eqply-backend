@@ -127,8 +127,7 @@ let CartService = class CartService {
 exports.CartService = CartService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(cart_schema_1.Cart.name)),
-    __param(0, (0, common_1.Optional)()),
+    __param(0, (0, mongoose_1.InjectModel)(cart_schema_1.Cart.name), (0, common_1.Optional)()),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
   CartService,
