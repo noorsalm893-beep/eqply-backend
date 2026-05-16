@@ -55,6 +55,9 @@ let ProductsController = class ProductsController {
     return this.productsService.searchProducts(query);
   }
   getMyProducts(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.productsService.getProductsByVendor(user._id);
   }
 };

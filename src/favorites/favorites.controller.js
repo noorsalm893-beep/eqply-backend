@@ -45,6 +45,9 @@ let FavoritesController = class FavoritesController {
     this.favoritesService = favoritesService;
   }
   toggleFavorite(user, toggleFavoriteDto) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     const { productId } = toggleFavoriteDto;
     return this.favoritesService.findByUserIdAndProductId(user._id, productId)
       .then(existing => {
@@ -59,6 +62,9 @@ let FavoritesController = class FavoritesController {
       });
   }
   getFavorites(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.favoritesService.findByUserId(user._id);
   }
 };

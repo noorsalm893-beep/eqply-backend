@@ -45,6 +45,9 @@ let ReviewsController = class ReviewsController {
     this.reviewsService = reviewsService;
   }
   createReview(user, createReviewDto) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.reviewsService.create({
       ...createReviewDto,
       userId: user._id,
@@ -54,6 +57,9 @@ let ReviewsController = class ReviewsController {
     return this.reviewsService.findRecent();
   }
   getUserRecent(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.reviewsService.findRecent();
   }
 };

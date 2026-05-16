@@ -46,18 +46,33 @@ let OrdersController = class OrdersController {
     this.ordersService = ordersService;
   }
   createOrderFromCart(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.ordersService.createOrderFromCart(user._id);
   }
   getOrders(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.ordersService.findByUserId(user._id);
   }
   getOrdersByStatus(user, query) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.ordersService.findByUserIdAndStatus(user._id, query.status);
   }
   updateOrderStatus(user, updateOrderStatusDto) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.ordersService.updateOrderStatus(updateOrderStatusDto.id, updateOrderStatusDto.status);
   }
   getOrderStatusCounts(user) {
+    if (!user) {
+      throw new common_1.UnauthorizedException('User not found or unauthorized');
+    }
     return this.ordersService.getOrderCountsByStatus(user._id);
   }
 };
