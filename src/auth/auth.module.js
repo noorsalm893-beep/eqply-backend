@@ -38,6 +38,7 @@ exports.AuthModule = AuthModule = __decorate(
         users_module_1.UsersModule,
         mail_module_1.MailModule,
         passport_1.PassportModule,
+        config_1.ConfigModule, // ✅ FIX — import ConfigModule so ConfigService is available
         jwt_1.JwtModule.registerAsync({
           imports: [config_1.ConfigModule],
           useFactory: async (configService) => ({
@@ -47,7 +48,11 @@ exports.AuthModule = AuthModule = __decorate(
           inject: [config_1.ConfigService],
         }),
       ],
-      providers: [auth_service_1.AuthService, jwt_strategy_1.JwtStrategy],
+      providers: [
+        auth_service_1.AuthService,
+        jwt_strategy_1.JwtStrategy,
+        config_1.ConfigService, // ✅ FIX — provide ConfigService so JwtStrategy can inject it
+      ],
       controllers: [auth_controller_1.AuthController],
     }),
   ],
