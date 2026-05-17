@@ -108,11 +108,14 @@ __decorate(
   'getUserRecent',
   null,
 );
+// ✅ FIX — added __metadata('design:paramtypes') so NestJS knows to inject ReviewsService
 exports.ReviewsController = ReviewsController = __decorate(
   [
     (0, common_1.Controller)('reviews'),
     (0, swagger_1.ApiTags)('reviews'),
+    __metadata('design:paramtypes', [reviews_service_1.ReviewsService]),
   ],
   ReviewsController,
 );
 //# sourceMappingURL=reviews.controller.js.map
+ 
