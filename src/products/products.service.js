@@ -60,7 +60,6 @@ let ProductsService = class ProductsService {
     return this.getModelOrThrow().find().exec();
   }
   async getCategories() {
-    // Return distinct categories
     return this.getModelOrThrow().distinct('category').exec();
   }
   async searchProducts(query) {
@@ -76,9 +75,28 @@ let ProductsService = class ProductsService {
       })
       .exec();
   }
-
   async getProductsByVendor(vendorId) {
     return this.getModelOrThrow().find({ 'vendor.vendorId': vendorId }).exec();
+  }
+  // ✅ NEW — create a product posted by a student
+  async createProduct(createProductDto, user) {
+    const product = new (this.getModelOrThrow())({
+      picture: createProductDto.picture,
+      name: createProductDto.name,
+      description: createProductDto.description,
+      category: createProductDto.category,
+      rentAvailable: createProductDto.rentAvailable ?? false,
+      buyAvailable: createProductDto.buyAvailable ?? false,
+      rentOptions: createProductDto.rentOptions ?? [],
+      buyPrice: createProductDto.buyPrice,
+      bestDeal: false,
+      liked: false,
+      vendor: {
+        vendorId: user._id.toString(),
+        vendorName: user.name,
+      },
+    });
+    return product.save();
   }
 };
 exports.ProductsService = ProductsService;
@@ -91,3 +109,4 @@ exports.ProductsService = ProductsService = __decorate(
   ProductsService,
 );
 //# sourceMappingURL=products.service.js.map
+ 
