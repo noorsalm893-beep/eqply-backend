@@ -76,13 +76,6 @@ let CartController = class CartController {
     return this.cartService.clearCart(user._id);
   }
 };
-exports.CartController = CartController = __decorate(
-  [
-    (0, common_1.Controller)('cart'),
-    (0, swagger_1.ApiTags)('cart'),
-  ],
-  CartController,
-);
 __decorate(
   [
     (0, common_1.Post)('add'),
@@ -151,3 +144,13 @@ __decorate(
   'clearCart',
   null,
 );
+// ✅ FIX — added __metadata('design:paramtypes') so NestJS injects CartService
+exports.CartController = CartController = __decorate(
+  [
+    (0, common_1.Controller)('cart'),
+    (0, swagger_1.ApiTags)('cart'),
+    __metadata('design:paramtypes', [cart_service_1.CartService]),
+  ],
+  CartController,
+);
+//# sourceMappingURL=cart.controller.js.map

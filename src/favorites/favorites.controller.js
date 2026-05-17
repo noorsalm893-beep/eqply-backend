@@ -21,7 +21,7 @@ var __decorate =
 var __metadata =
   (this && this.__metadata) ||
   function (k, v) {
-    if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
+    if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function')
       return Reflect.metadata(k, v);
   };
 var __param =
@@ -68,13 +68,6 @@ let FavoritesController = class FavoritesController {
     return this.favoritesService.findByUserId(user._id);
   }
 };
-exports.FavoritesController = FavoritesController = __decorate(
-  [
-    (0, common_1.Controller)('favorites'),
-    (0, swagger_1.ApiTags)('favorites'),
-  ],
-  FavoritesController,
-);
 __decorate(
   [
     (0, common_1.Post)('toggle'),
@@ -109,3 +102,13 @@ __decorate(
   'getFavorites',
   null,
 );
+// ✅ FIX — added __metadata('design:paramtypes') so NestJS injects FavoritesService
+exports.FavoritesController = FavoritesController = __decorate(
+  [
+    (0, common_1.Controller)('favorites'),
+    (0, swagger_1.ApiTags)('favorites'),
+    __metadata('design:paramtypes', [favorites_service_1.FavoritesService]),
+  ],
+  FavoritesController,
+);
+//# sourceMappingURL=favorites.controller.js.map
