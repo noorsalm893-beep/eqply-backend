@@ -11,7 +11,7 @@ const common_1 = require('@nestjs/common');
 const mongoose_1 = require('@nestjs/mongoose');
 const payments_controller_1 = require('./payments.controller');
 const payments_service_1 = require('./payments.service');
-const payment_proof_schema_1 = require('./paymentproof.schema');
+const payments_service_1 = require('./Payments.service');
 let PaymentsModule = class PaymentsModule {};
 exports.PaymentsModule = PaymentsModule = __decorate([
   (0, common_1.Module)({
