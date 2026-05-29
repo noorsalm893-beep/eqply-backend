@@ -41,6 +41,7 @@ const current_user_decorator_1 = require('../common/decorators/current-user.deco
 const users_service_1 = require('./users.service');
 const update_profile_dto_1 = require('./dto/update-profile.dto');
 const update_preferences_dto_1 = require('./dto/update-preferences.dto');
+const user_preferences_response_dto_1 = require('./dto/user-preferences-response.dto');
 let UsersController = class UsersController {
   usersService;
   constructor(usersService) {
@@ -71,17 +72,11 @@ let UsersController = class UsersController {
     };
   }
   async updatePreferences(user, dto) {
-    const updated = await this.usersService.update(user._id, {
-      ...(dto.notifications !== undefined ? { notifications: dto.notifications } : {}),
-      ...(dto.language !== undefined ? { language: dto.language } : {}),
-      ...(dto.darkMode !== undefined ? { darkMode: dto.darkMode } : {}),
-    });
-    if (!updated) throw new common_1.NotFoundException('User not found');
-    const obj = updated.toObject();
-    delete obj.password;
-    delete obj.verificationToken;
-    delete obj.passwordResetToken;
-    return obj;
+    const preferences = await this.usersService.updatePreferences(user._id, dto);
+    if (!preferences) {
+      throw new common_1.NotFoundException('User not found');
+    }
+    return preferences;
   }
 };
 __decorate(
@@ -107,6 +102,21 @@ __decorate(
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.Patch)('preferences'),
+    (0, swagger_1.ApiOperation)({
+      summary: 'Update user preferences',
+      description:
+        'Update language (en, ar, fr), notifications, and/or dark mode for the authenticated user',
+    }),
+    (0, swagger_1.ApiBody)({ type: update_preferences_dto_1.UpdatePreferencesDto }),
+    (0, swagger_1.ApiOkResponse)({
+      description: 'Updated user preferences',
+      type: user_preferences_response_dto_1.UserPreferencesResponseDto,
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Missing or invalid JWT' }),
+    (0, swagger_1.ApiNotFoundResponse)({ description: 'User not found' }),
+    (0, swagger_1.ApiBadRequestResponse)({
+      description: 'Invalid preference values (e.g. unsupported language code)',
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata('design:type', Function),

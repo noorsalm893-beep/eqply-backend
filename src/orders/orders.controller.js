@@ -39,6 +39,7 @@ const orders_service_1 = require('./orders.service');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
 const update_order_status_dto_1 = require('./dto/update-order-status.dto');
+const order_summary_dto_1 = require('./dto/order-summary.dto');
 let OrdersController = class OrdersController {
   ordersService;
   constructor(ordersService) {
@@ -50,11 +51,11 @@ let OrdersController = class OrdersController {
     }
     return this.ordersService.createOrderFromCart(user._id);
   }
-  getOrders(user) {
+  async getOrders(user) {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
     }
-    return this.ordersService.findByUserId(user._id);
+    return this.ordersService.findMyOrders(user._id);
   }
   getOrdersByStatus(user, query) {
     if (!user) {
@@ -95,6 +96,17 @@ __decorate(
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({
+      summary: 'List my orders',
+      description:
+        'Returns orders for the authenticated user with populated product details on each line item',
+    }),
+    (0, swagger_1.ApiOkResponse)({
+      description: 'List of orders belonging to the authenticated user',
+      type: order_summary_dto_1.OrderSummaryDto,
+      isArray: true,
+    }),
+    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Missing or invalid JWT' }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata('design:type', Function),

@@ -127,7 +127,11 @@ __decorate(
 );
 __decorate(
   [
-    (0, mongoose_1.Prop)({ type: String, default: 'english' }),
+    (0, mongoose_1.Prop)({
+      type: String,
+      enum: ['en', 'ar', 'fr'],
+      default: 'en',
+    }),
     __metadata('design:type', String),
   ],
   User.prototype,

@@ -37,6 +37,7 @@ const common_1 = require('@nestjs/common');
 const mongoose_1 = require('@nestjs/mongoose');
 const mongoose_2 = require('mongoose');
 const product_schema_1 = require('./product.schema');
+const get_products_query_dto_1 = require('./dto/get-products-query.dto');
 let ProductsService = class ProductsService {
   productModel;
   constructor(productModel) {
@@ -56,8 +57,43 @@ let ProductsService = class ProductsService {
       .limit(4)
       .exec();
   }
-  async getAllProducts() {
-    return this.getModelOrThrow().find().exec();
+  buildProductsFilter(query) {
+    const filter = {};
+    if (query.category) {
+      filter.category = query.category;
+    }
+    if (query.type === get_products_query_dto_1.ProductType.RENT) {
+      filter.rentAvailable = true;
+    } else if (query.type === get_products_query_dto_1.ProductType.BUY) {
+      filter.buyAvailable = true;
+    }
+    if (query.minPrice != null || query.maxPrice != null) {
+      filter.buyPrice = {};
+      if (query.minPrice != null) {
+        filter.buyPrice.$gte = query.minPrice;
+      }
+      if (query.maxPrice != null) {
+        filter.buyPrice.$lte = query.maxPrice;
+      }
+    }
+    return filter;
+  }
+  buildProductsSort(query) {
+    const sort = query.sort ?? get_products_query_dto_1.ProductSort.NEWEST;
+    switch (sort) {
+      case get_products_query_dto_1.ProductSort.LOWEST:
+        return { buyPrice: 1 };
+      case get_products_query_dto_1.ProductSort.HIGHEST:
+        return { buyPrice: -1 };
+      case get_products_query_dto_1.ProductSort.NEWEST:
+      default:
+        return { createdAt: -1 };
+    }
+  }
+  async getAllProducts(query = {}) {
+    const filter = this.buildProductsFilter(query);
+    const sort = this.buildProductsSort(query);
+    return this.getModelOrThrow().find(filter).sort(sort).exec();
   }
   async getCategories() {
     return this.getModelOrThrow().distinct('category').exec();

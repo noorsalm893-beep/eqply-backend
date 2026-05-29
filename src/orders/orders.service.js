@@ -61,8 +61,46 @@ let OrdersService = class OrdersService {
   async findById(id) {
     return this.getModelOrThrow().findById(id).populate('items.productId').exec();
   }
+  getItemsPopulateOptions() {
+    return {
+      path: 'items.productId',
+      select: '_id name buyPrice picture',
+    };
+  }
+  formatPopulatedProduct(product) {
+    if (!product || typeof product !== 'object' || !product._id) {
+      return null;
+    }
+    return {
+      _id: product._id,
+      title: product.name,
+      price: product.buyPrice,
+      images: product.picture ? [product.picture] : [],
+    };
+  }
+  formatOrderSummary(order) {
+    return {
+      _id: order._id,
+      status: order.status,
+      total: order.totalAmount,
+      createdAt: order.createdAt,
+      items: order.items.map((item) => ({
+        quantity: item.quantity,
+        price: item.price,
+        product: this.formatPopulatedProduct(item.productId),
+      })),
+    };
+  }
+  async findMyOrders(userId) {
+    const orders = await this.getModelOrThrow()
+      .find({ userId })
+      .populate(this.getItemsPopulateOptions())
+      .sort({ createdAt: -1 })
+      .exec();
+    return orders.map((order) => this.formatOrderSummary(order));
+  }
   async findByUserId(userId) {
-    return this.getModelOrThrow().find({ userId }).populate('items.productId').sort({ createdAt: -1 }).exec();
+    return this.findMyOrders(userId);
   }
   async findByUserIdAndStatus(userId, status) {
     return this.getModelOrThrow().find({ userId, status }).populate('items.productId').sort({ createdAt: -1 }).exec();

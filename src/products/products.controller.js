@@ -19,6 +19,7 @@ const platform_express_1 = require('@nestjs/platform-express');
 const multer = require('multer');
 const path = require('path');
 const products_service_1 = require('./products.service');
+const get_products_query_dto_1 = require('./dto/get-products-query.dto');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
 
@@ -42,8 +43,8 @@ let ProductsController = class ProductsController {
   getBestDeals() {
     return this.productsService.getBestDeals();
   }
-  getAllProducts() {
-    return this.productsService.getAllProducts();
+  getAllProducts(query) {
+    return this.productsService.getAllProducts(query);
   }
   getCategories() {
     return this.productsService.getCategories();
@@ -72,8 +73,12 @@ __decorate([
 
 __decorate([
   (0, common_1.Get)(),
+  (0, swagger_1.ApiOperation)({
+    summary: 'List products with optional filters and sorting',
+  }),
+  __param(0, (0, common_1.Query)()),
   __metadata('design:type', Function),
-  __metadata('design:paramtypes', []),
+  __metadata('design:paramtypes', [get_products_query_dto_1.GetProductsQueryDto]),
   __metadata('design:returntype', void 0),
 ], ProductsController.prototype, 'getAllProducts', null);
 

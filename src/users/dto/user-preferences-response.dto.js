@@ -25,56 +25,46 @@ var __metadata =
       return Reflect.metadata(k, v);
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.UpdatePreferencesDto = void 0;
-const class_transformer_1 = require('class-transformer');
-const class_validator_1 = require('class-validator');
+exports.UserPreferencesResponseDto = exports.SUPPORTED_LANGUAGES = void 0;
 const swagger_1 = require('@nestjs/swagger');
-const user_preferences_response_dto_1 = require('./user-preferences-response.dto');
 
-class UpdatePreferencesDto {
+exports.SUPPORTED_LANGUAGES = ['en', 'ar', 'fr'];
+
+class UserPreferencesResponseDto {
   notifications;
   language;
   darkMode;
 }
-exports.UpdatePreferencesDto = UpdatePreferencesDto;
+exports.UserPreferencesResponseDto = UserPreferencesResponseDto;
+
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({ example: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
+    (0, swagger_1.ApiProperty)({ example: true }),
     __metadata('design:type', Boolean),
   ],
-  UpdatePreferencesDto.prototype,
+  UserPreferencesResponseDto.prototype,
   'notifications',
   void 0,
 );
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({
-      enum: user_preferences_response_dto_1.SUPPORTED_LANGUAGES,
+    (0, swagger_1.ApiProperty)({
+      enum: exports.SUPPORTED_LANGUAGES,
       example: 'en',
-      description: 'Preferred UI language code (en, ar, or fr)',
+      description: 'Preferred UI language code',
     }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsEnum)(user_preferences_response_dto_1.SUPPORTED_LANGUAGES),
-    (0, class_transformer_1.Transform)(({ value }) =>
-      typeof value === 'string' ? value.toLowerCase() : value,
-    ),
     __metadata('design:type', String),
   ],
-  UpdatePreferencesDto.prototype,
+  UserPreferencesResponseDto.prototype,
   'language',
   void 0,
 );
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({ example: false }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsBoolean)(),
+    (0, swagger_1.ApiProperty)({ example: false }),
     __metadata('design:type', Boolean),
   ],
-  UpdatePreferencesDto.prototype,
+  UserPreferencesResponseDto.prototype,
   'darkMode',
   void 0,
 );
-//# sourceMappingURL=update-preferences.dto.js.map
