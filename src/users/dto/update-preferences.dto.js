@@ -25,43 +25,55 @@ var __metadata =
       return Reflect.metadata(k, v);
   };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.UpdatePreferencesDto = void 0;
+exports.UpdatePreferencesDto = exports.LanguageOption = void 0;
 const class_validator_1 = require('class-validator');
 const swagger_1 = require('@nestjs/swagger');
-class UpdatePreferencesDto {
-}
+
+var LanguageOption;
+(function (LanguageOption) {
+  LanguageOption['EN'] = 'en';
+  LanguageOption['AR'] = 'ar';
+  LanguageOption['FR'] = 'fr';
+})(LanguageOption || (exports.LanguageOption = LanguageOption = {}));
+
+class UpdatePreferencesDto {}
 exports.UpdatePreferencesDto = UpdatePreferencesDto;
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({ example: true }),
+    (0, swagger_1.ApiPropertyOptional)({
+      description: 'Enable or disable notifications',
+      example: true,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata('design:type', Boolean),
   ],
-  UpdatePreferencesDto.prototype,
-  'notifications',
-  void 0,
+  UpdatePreferencesDto.prototype, 'notifications', void 0,
 );
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({ example: 'english' }),
+    (0, swagger_1.ApiPropertyOptional)({
+      description: 'Preferred language',
+      enum: LanguageOption,
+      example: LanguageOption.EN,
+    }),
     (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsEnum)(LanguageOption, {
+      message: 'language must be one of: en, ar, fr',
+    }),
     __metadata('design:type', String),
   ],
-  UpdatePreferencesDto.prototype,
-  'language',
-  void 0,
+  UpdatePreferencesDto.prototype, 'language', void 0,
 );
 __decorate(
   [
-    (0, swagger_1.ApiPropertyOptional)({ example: false }),
+    (0, swagger_1.ApiPropertyOptional)({
+      description: 'Enable or disable dark mode',
+      example: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsBoolean)(),
     __metadata('design:type', Boolean),
   ],
-  UpdatePreferencesDto.prototype,
-  'darkMode',
-  void 0,
+  UpdatePreferencesDto.prototype, 'darkMode', void 0,
 );
-//# sourceMappingURL=update-preferences.dto.js.map

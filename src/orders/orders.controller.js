@@ -39,6 +39,7 @@ const orders_service_1 = require('./orders.service');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
 const update_order_status_dto_1 = require('./dto/update-order-status.dto');
+
 let OrdersController = class OrdersController {
   ordersService;
   constructor(ordersService) {
@@ -50,6 +51,7 @@ let OrdersController = class OrdersController {
     }
     return this.ordersService.createOrderFromCart(user._id);
   }
+  // ✅ UPGRADED — returns only logged-in user's orders with populated product details
   getOrders(user) {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
@@ -66,7 +68,10 @@ let OrdersController = class OrdersController {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
     }
-    return this.ordersService.updateOrderStatus(updateOrderStatusDto.id, updateOrderStatusDto.status);
+    return this.ordersService.updateOrderStatus(
+      updateOrderStatusDto.id,
+      updateOrderStatusDto.status,
+    );
   }
   getOrderStatusCounts(user) {
     if (!user) {
@@ -86,24 +91,45 @@ __decorate(
     __metadata('design:paramtypes', [Object]),
     __metadata('design:returntype', Promise),
   ],
-  OrdersController.prototype,
-  'createOrderFromCart',
-  null,
+  OrdersController.prototype, 'createOrderFromCart', null,
 );
 __decorate(
   [
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: "Get logged-in user's orders with product details" }),
+    (0, swagger_1.ApiOkResponse)({
+      description: 'List of orders with populated product details',
+      schema: {
+        example: [
+          {
+            _id: 'orderId',
+            status: 'Delivered',
+            total: 500,
+            createdAt: '2024-01-01T00:00:00.000Z',
+            items: [
+              {
+                product: {
+                  _id: 'productId',
+                  name: 'Product Name',
+                  buyPrice: 250,
+                  picture: 'url',
+                },
+                quantity: 2,
+              },
+            ],
+          },
+        ],
+      },
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata('design:type', Function),
     __metadata('design:paramtypes', [Object]),
     __metadata('design:returntype', Promise),
   ],
-  OrdersController.prototype,
-  'getOrders',
-  null,
+  OrdersController.prototype, 'getOrders', null,
 );
 __decorate(
   [
@@ -117,9 +143,7 @@ __decorate(
     __metadata('design:paramtypes', [Object, Object]),
     __metadata('design:returntype', Promise),
   ],
-  OrdersController.prototype,
-  'getOrdersByStatus',
-  null,
+  OrdersController.prototype, 'getOrdersByStatus', null,
 );
 __decorate(
   [
@@ -130,12 +154,13 @@ __decorate(
     __param(1, (0, common_1.Body)()),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __metadata('design:type', Function),
-    __metadata('design:paramtypes', [Object, update_order_status_dto_1.UpdateOrderStatusDto]),
+    __metadata('design:paramtypes', [
+      Object,
+      update_order_status_dto_1.UpdateOrderStatusDto,
+    ]),
     __metadata('design:returntype', Promise),
   ],
-  OrdersController.prototype,
-  'updateOrderStatus',
-  null,
+  OrdersController.prototype, 'updateOrderStatus', null,
 );
 __decorate(
   [
@@ -148,11 +173,8 @@ __decorate(
     __metadata('design:paramtypes', [Object]),
     __metadata('design:returntype', Promise),
   ],
-  OrdersController.prototype,
-  'getOrderStatusCounts',
-  null,
+  OrdersController.prototype, 'getOrderStatusCounts', null,
 );
-// ✅ FIX — added __metadata('design:paramtypes') so NestJS injects OrdersService
 exports.OrdersController = OrdersController = __decorate(
   [
     (0, common_1.Controller)('orders'),

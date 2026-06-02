@@ -48,9 +48,7 @@ __decorate(
     (0, mongoose_1.Prop)({ type: String, required: true, trim: true }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'name',
-  void 0,
+  User.prototype, 'name', void 0,
 );
 __decorate(
   [
@@ -63,18 +61,14 @@ __decorate(
     }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'email',
-  void 0,
+  User.prototype, 'email', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, required: true }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'password',
-  void 0,
+  User.prototype, 'password', void 0,
 );
 __decorate(
   [
@@ -85,126 +79,103 @@ __decorate(
     }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'role',
-  void 0,
+  User.prototype, 'role', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, default: null }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'phone',
-  void 0,
+  User.prototype, 'phone', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, default: null }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'location',
-  void 0,
+  User.prototype, 'location', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, default: null }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'avatar',
-  void 0,
+  User.prototype, 'avatar', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Boolean, default: true }),
     __metadata('design:type', Boolean),
   ],
-  User.prototype,
-  'notifications',
-  void 0,
+  User.prototype, 'notifications', void 0,
 );
+// ✅ UPDATED — language now uses en/ar/fr values with default 'en'
 __decorate(
   [
-    (0, mongoose_1.Prop)({ type: String, default: 'english' }),
+    (0, mongoose_1.Prop)({
+      type: String,
+      enum: ['en', 'ar', 'fr'],
+      default: 'en',
+    }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'language',
-  void 0,
+  User.prototype, 'language', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Boolean, default: false }),
     __metadata('design:type', Boolean),
   ],
-  User.prototype,
-  'darkMode',
-  void 0,
+  User.prototype, 'darkMode', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Boolean, default: false }),
     __metadata('design:type', Boolean),
   ],
-  User.prototype,
-  'isVerified',
-  void 0,
+  User.prototype, 'isVerified', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Boolean, default: true }),
     __metadata('design:type', Boolean),
   ],
-  User.prototype,
-  'isActive',
-  void 0,
+  User.prototype, 'isActive', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, default: null }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'verificationToken',
-  void 0,
+  User.prototype, 'verificationToken', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Date, default: null }),
     __metadata('design:type', Date),
   ],
-  User.prototype,
-  'verificationTokenExpires',
-  void 0,
+  User.prototype, 'verificationTokenExpires', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: String, default: null }),
     __metadata('design:type', String),
   ],
-  User.prototype,
-  'passwordResetToken',
-  void 0,
+  User.prototype, 'passwordResetToken', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Date, default: null }),
     __metadata('design:type', Date),
   ],
-  User.prototype,
-  'passwordResetExpires',
-  void 0,
+  User.prototype, 'passwordResetExpires', void 0,
 );
 __decorate(
   [
     (0, mongoose_1.Prop)({ type: Date, default: null }),
     __metadata('design:type', Date),
   ],
-  User.prototype,
-  'lastLogin',
-  void 0,
+  User.prototype, 'lastLogin', void 0,
 );
 exports.User = User = __decorate(
   [(0, mongoose_1.Schema)({ timestamps: true })],

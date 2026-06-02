@@ -38,6 +38,7 @@ const mongoose_1 = require('@nestjs/mongoose');
 const mongoose_2 = require('mongoose');
 const order_schema_1 = require('./order.schema');
 const cart_service_1 = require('../cart/cart.service');
+
 let OrdersService = class OrdersService {
   orderModel;
   cartService;
@@ -59,73 +60,99 @@ let OrdersService = class OrdersService {
     return order.save();
   }
   async findById(id) {
-    return this.getModelOrThrow().findById(id).populate('items.productId').exec();
+    return this.getModelOrThrow()
+      .findById(id)
+      .populate('items.productId')
+      .exec();
   }
+  // ✅ UPGRADED — returns only logged-in user orders, populates product details,
+  //               and maps items to { product, quantity } response shape
   async findByUserId(userId) {
-    return this.getModelOrThrow().find({ userId }).populate('items.productId').sort({ createdAt: -1 }).exec();
+    const orders = await this.getModelOrThrow()
+      .find({ userId })
+      .populate('items.productId', '_id name buyPrice picture')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return orders.map((order) => ({
+      _id: order._id,
+      status: order.status,
+      total: order.totalAmount,
+      createdAt: order.createdAt,
+      items: (order.items || []).map((item) => ({
+        product: item.productId,   // populated product document
+        quantity: item.quantity,
+      })),
+    }));
   }
   async findByUserIdAndStatus(userId, status) {
-    return this.getModelOrThrow().find({ userId, status }).populate('items.productId').sort({ createdAt: -1 }).exec();
+    const orders = await this.getModelOrThrow()
+      .find({ userId, status })
+      .populate('items.productId', '_id name buyPrice picture')
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return orders.map((order) => ({
+      _id: order._id,
+      status: order.status,
+      total: order.totalAmount,
+      createdAt: order.createdAt,
+      items: (order.items || []).map((item) => ({
+        product: item.productId,
+        quantity: item.quantity,
+      })),
+    }));
   }
   async createOrderFromCart(userId) {
-    // Get user's cart
     const cart = await this.cartService.findByUserId(userId);
     if (!cart || !cart.items || cart.items.length === 0) {
       throw new common_1.BadRequestException('Cart is empty');
     }
-
-    // Calculate total amount
     let totalAmount = 0;
     const orderItems = [];
-
     for (const item of cart.items) {
-      // In a real implementation, you would fetch product details to get current price
-      // For now, we'll assume price is stored in the cart item or we'll use a placeholder
-      const price = item.price || 0; // This would need to be implemented properly
+      const price = item.price || 0;
       totalAmount += price * item.quantity;
       orderItems.push({
         productId: item.productId,
         quantity: item.quantity,
-        price: price
+        price: price,
       });
     }
-
-    // Create order
     const orderData = {
       userId,
       items: orderItems,
       totalAmount,
-      status: 'pending'
+      status: 'pending',
     };
-
     const order = await this.create(orderData);
-
-    // Clear cart after creating order
     await this.cartService.clearCart(userId);
-
     return order;
   }
   async updateOrderStatus(id, status) {
-    return this.getModelOrThrow().findByIdAndUpdate(
-      id,
-      { status },
-      { new: true }
-    ).populate('items.productId').exec();
+    return this.getModelOrThrow()
+      .findByIdAndUpdate(id, { status }, { new: true })
+      .populate('items.productId')
+      .exec();
   }
-
   async getOrderCountsByStatus(userId) {
-    const pipeline = [
-      { $match: { userId: this.getModelOrThrow().Schema.Types.ObjectId(userId) } },
-      { $group: { _id: '$status', count: { $sum: 1 } } }
-    ];
-    return this.getModelOrThrow().aggregate(pipeline).exec();
+    const objectId = new mongoose_2.Types.ObjectId(userId);
+    return this.getModelOrThrow()
+      .aggregate([
+        { $match: { userId: objectId } },
+        { $group: { _id: '$status', count: { $sum: 1 } } },
+      ])
+      .exec();
   }
 };
+exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate(
   [
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(order_schema_1.Order.name), (0, common_1.Optional)()),
-    __param(1, (0, common_1.Inject)()),
+    __param(1, (0, common_1.Inject)(cart_service_1.CartService)),
     __metadata('design:paramtypes', [mongoose_2.Model, cart_service_1.CartService]),
   ],
   OrdersService,

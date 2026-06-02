@@ -37,6 +37,7 @@ const common_1 = require('@nestjs/common');
 const mongoose_1 = require('@nestjs/mongoose');
 const mongoose_2 = require('mongoose');
 const product_schema_1 = require('./product.schema');
+
 let ProductsService = class ProductsService {
   productModel;
   constructor(productModel) {
@@ -56,8 +57,43 @@ let ProductsService = class ProductsService {
       .limit(4)
       .exec();
   }
-  async getAllProducts() {
-    return this.getModelOrThrow().find().exec();
+  // ✅ UPGRADED — supports filtering & sorting via query params
+  async getAllProducts(query = {}) {
+    const filter = {};
+
+    // --- Filtering ---
+    if (query.category) {
+      filter.category = query.category;
+    }
+
+    if (query.type) {
+      // 'Sale' maps to buyAvailable, 'Rental' maps to rentAvailable
+      if (query.type === 'Sale') {
+        filter.buyAvailable = true;
+      } else if (query.type === 'Rental') {
+        filter.rentAvailable = true;
+      } else {
+        filter.type = query.type;
+      }
+    }
+
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      filter.buyPrice = {};
+      if (query.minPrice !== undefined) filter.buyPrice.$gte = query.minPrice;
+      if (query.maxPrice !== undefined) filter.buyPrice.$lte = query.maxPrice;
+    }
+
+    // --- Sorting ---
+    let sortOption = { createdAt: -1 }; // default: newest
+    if (query.sort === 'lowest') {
+      sortOption = { buyPrice: 1 };
+    } else if (query.sort === 'highest') {
+      sortOption = { buyPrice: -1 };
+    } else if (query.sort === 'newest') {
+      sortOption = { createdAt: -1 };
+    }
+
+    return this.getModelOrThrow().find(filter).sort(sortOption).exec();
   }
   async getCategories() {
     return this.getModelOrThrow().distinct('category').exec();
@@ -70,15 +106,14 @@ let ProductsService = class ProductsService {
       .find({
         $or: [
           { name: { $regex: query, $options: 'i' } },
-          { description: { $regex: query, $options: 'i' } }
-        ]
+          { description: { $regex: query, $options: 'i' } },
+        ],
       })
       .exec();
   }
   async getProductsByVendor(vendorId) {
     return this.getModelOrThrow().find({ 'vendor.vendorId': vendorId }).exec();
   }
-  // ✅ NEW — create a product posted by a student
   async createProduct(createProductDto, user) {
     const product = new (this.getModelOrThrow())({
       picture: createProductDto.picture,
@@ -109,4 +144,3 @@ exports.ProductsService = ProductsService = __decorate(
   ProductsService,
 );
 //# sourceMappingURL=products.service.js.map
- 
