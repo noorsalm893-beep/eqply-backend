@@ -66,6 +66,32 @@ let UsersService = class UsersService {
       .findByIdAndUpdate(id, updateData, { new: true })
       .exec();
   }
+  toPreferencesResponse(user) {
+    return {
+      notifications: user.notifications,
+      language: user.language,
+      darkMode: user.darkMode,
+    };
+  }
+  async updatePreferences(userId, dto) {
+    const updateData = {};
+    if (dto.notifications !== undefined) {
+      updateData.notifications = dto.notifications;
+    }
+    if (dto.language !== undefined) {
+      updateData.language = dto.language;
+    }
+    if (dto.darkMode !== undefined) {
+      updateData.darkMode = dto.darkMode;
+    }
+    const updated = await this.getModelOrThrow()
+      .findByIdAndUpdate(userId, updateData, { new: true, runValidators: true })
+      .exec();
+    if (!updated) {
+      return null;
+    }
+    return this.toPreferencesResponse(updated);
+  }
   async findByVerificationToken(token) {
     return this.getModelOrThrow().findOne({ verificationToken: token }).exec();
   }

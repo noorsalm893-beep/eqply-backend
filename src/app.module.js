@@ -31,6 +31,7 @@ const reviews_module_1 = require('./reviews/reviews.module');
 const favorites_module_1 = require('./favorites/favorites.module');
 const orders_module_1 = require('./orders/orders.module');
 const cart_module_1 = require('./cart/cart.module');
+const payments_module_1 = require('./payment/Payments.module');
 const normalizeBooleanEnv = (value, defaultValue = true) => {
   if (value === undefined || value === null || value === '') {
     return defaultValue;
@@ -55,6 +56,7 @@ const moduleImports = [
   favorites_module_1.FavoritesModule,
   orders_module_1.OrdersModule,
   cart_module_1.CartModule,
+  payments_module_1.PaymentsModule,
 ];
 if (databaseEnabled) {
   moduleImports.push(

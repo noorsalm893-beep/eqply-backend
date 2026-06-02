@@ -107,6 +107,8 @@ function renderDashboardHtml(port) {
 }
 async function bootstrap() {
   const app = await core_1.NestFactory.create(app_module_1.AppModule);
+  const path_1 = require('path');
+app.useStaticAssets(path_1.join(__dirname, '..', 'uploads'), { prefix: '/uploads' });
   const apiPrefix = 'api';
   const swaggerPath = 'docs';
   const swaggerJsonPath = 'docs-json';

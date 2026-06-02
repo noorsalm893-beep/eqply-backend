@@ -111,7 +111,7 @@ let MailService = (MailService_1 = class MailService {
   async sendVerificationEmail(email, name, token) {
     const frontendUrl =
       this.configService.get('FRONTEND_URL') || 'http://localhost:8081';
-    const verifyUrl = `${frontendUrl}/auth/verify-account?token=${token}`;
+    const verifyUrl = `${frontendUrl}/api/auth/verify-account?token=${token}`;
     await this.sendEmail(
       email,
       'Verify your Eqply account',
@@ -157,3 +157,4 @@ exports.MailService =
       MailService,
     );
 //# sourceMappingURL=mail.service.js.map
+ 
