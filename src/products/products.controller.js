@@ -38,6 +38,8 @@ const swagger_1 = require('@nestjs/swagger');
 const products_service_1 = require('./products.service');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
+const query_products_dto_1 = require('./dto/query-products.dto');
+
 let ProductsController = class ProductsController {
   productsService;
   constructor(productsService) {
@@ -46,8 +48,9 @@ let ProductsController = class ProductsController {
   getBestDeals() {
     return this.productsService.getBestDeals();
   }
-  getAllProducts() {
-    return this.productsService.getAllProducts();
+  // ✅ UPGRADED — accepts optional filter/sort query params
+  getAllProducts(query) {
+    return this.productsService.getAllProducts(query);
   }
   getCategories() {
     return this.productsService.getCategories();
@@ -61,7 +64,6 @@ let ProductsController = class ProductsController {
     }
     return this.productsService.getProductsByVendor(user._id);
   }
-  // ✅ NEW — POST /api/products
   createProduct(user, body) {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
@@ -84,8 +86,15 @@ __decorate(
 __decorate(
   [
     (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all products with optional filtering and sorting' }),
+    (0, swagger_1.ApiQuery)({ name: 'category', required: false, description: 'Filter by category' }),
+    (0, swagger_1.ApiQuery)({ name: 'type', required: false, description: 'Filter by type: Sale | Rental' }),
+    (0, swagger_1.ApiQuery)({ name: 'minPrice', required: false, type: Number, description: 'Minimum price' }),
+    (0, swagger_1.ApiQuery)({ name: 'maxPrice', required: false, type: Number, description: 'Maximum price' }),
+    (0, swagger_1.ApiQuery)({ name: 'sort', required: false, enum: query_products_dto_1.SortOption, description: 'Sort: newest | lowest | highest' }),
+    __param(0, (0, common_1.Query)()),
     __metadata('design:type', Function),
-    __metadata('design:paramtypes', []),
+    __metadata('design:paramtypes', [query_products_dto_1.QueryProductsDto]),
     __metadata('design:returntype', void 0),
   ],
   ProductsController.prototype,
@@ -129,7 +138,6 @@ __decorate(
   'getMyProducts',
   null,
 );
-// ✅ NEW — POST /api/products (requires login)
 __decorate(
   [
     (0, common_1.Post)(),

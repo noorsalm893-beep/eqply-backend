@@ -41,6 +41,7 @@ const current_user_decorator_1 = require('../common/decorators/current-user.deco
 const users_service_1 = require('./users.service');
 const update_profile_dto_1 = require('./dto/update-profile.dto');
 const update_preferences_dto_1 = require('./dto/update-preferences.dto');
+
 let UsersController = class UsersController {
   usersService;
   constructor(usersService) {
@@ -70,6 +71,7 @@ let UsersController = class UsersController {
       role: user.role,
     };
   }
+  // ✅ UPDATED — returns clean preferences shape including language
   async updatePreferences(user, dto) {
     const updated = await this.usersService.update(user._id, {
       ...(dto.notifications !== undefined ? { notifications: dto.notifications } : {}),
@@ -77,11 +79,12 @@ let UsersController = class UsersController {
       ...(dto.darkMode !== undefined ? { darkMode: dto.darkMode } : {}),
     });
     if (!updated) throw new common_1.NotFoundException('User not found');
-    const obj = updated.toObject();
-    delete obj.password;
-    delete obj.verificationToken;
-    delete obj.passwordResetToken;
-    return obj;
+    // Return only the preferences fields
+    return {
+      language: updated.language,
+      notifications: updated.notifications,
+      theme: updated.darkMode ? 'dark' : 'light',
+    };
   }
 };
 __decorate(
@@ -98,14 +101,20 @@ __decorate(
     ]),
     __metadata('design:returntype', Promise),
   ],
-  UsersController.prototype,
-  'updateProfile',
-  null,
+  UsersController.prototype, 'updateProfile', null,
 );
 __decorate(
   [
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update user preferences including language' }),
+    (0, swagger_1.ApiBody)({ type: update_preferences_dto_1.UpdatePreferencesDto }),
+    (0, swagger_1.ApiOkResponse)({
+      description: 'Preferences updated',
+      schema: {
+        example: { language: 'en', notifications: true, theme: 'dark' },
+      },
+    }),
     (0, common_1.Patch)('preferences'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
@@ -116,9 +125,7 @@ __decorate(
     ]),
     __metadata('design:returntype', Promise),
   ],
-  UsersController.prototype,
-  'updatePreferences',
-  null,
+  UsersController.prototype, 'updatePreferences', null,
 );
 __decorate(
   [
@@ -128,9 +135,7 @@ __decorate(
     __metadata('design:paramtypes', [String]),
     __metadata('design:returntype', Promise),
   ],
-  UsersController.prototype,
-  'getPublicProfile',
-  null,
+  UsersController.prototype, 'getPublicProfile', null,
 );
 exports.UsersController = UsersController = __decorate(
   [
