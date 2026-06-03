@@ -1,71 +1,94 @@
 'use strict';
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-  var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-  if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function') r = Reflect.decorate(decorators, target, key, desc);
-  else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-  return (c > 3 && r && Object.defineProperty(target, key, r), r);
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-  if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function') return Reflect.metadata(k, v);
-};
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-  return function (target, key) { decorator(target, key, paramIndex); }
-};
+var __decorate =
+  (this && this.__decorate) ||
+  function (decorators, target, key, desc) {
+    var c = arguments.length,
+      r =
+        c < 3
+          ? target
+          : desc === null
+            ? (desc = Object.getOwnPropertyDescriptor(target, key))
+            : desc,
+      d;
+    if (typeof Reflect === 'object' && typeof Reflect.decorate === 'function')
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if ((d = decorators[i]))
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return (c > 3 && r && Object.defineProperty(target, key, r), r);
+  };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.PaymentsController = void 0;
+exports.AppModule = void 0;
 const common_1 = require('@nestjs/common');
-const swagger_1 = require('@nestjs/swagger');
-const payments_service_1 = require('./Payments.service');
-const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
-const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
-const upload_proof_dto_1 = require('./dto/upload-proof.dto'); // ✅ FIXED PATH
+const mongoose_1 = require('@nestjs/mongoose');
+const config_1 = require('@nestjs/config');
+const auth_module_1 = require('./auth/auth.module');
+const mail_module_1 = require('./mail/mail.module');
+const users_module_1 = require('./users/users.module');
+const products_module_1 = require('./products/products.module');
+const reviews_module_1 = require('./reviews/reviews.module');
+const favorites_module_1 = require('./favorites/favorites.module');
+const orders_module_1 = require('./orders/orders.module');
+const cart_module_1 = require('./cart/cart.module');
+const chat_module_1 = require('./chat/chat.module');
+const payments_module_1 = require('./payment/Payments.module'); // ✅ NEW
 
-let PaymentsController = class PaymentsController {
-  paymentsService;
-  constructor(paymentsService) {
-    this.paymentsService = paymentsService;
+const normalizeBooleanEnv = (value, defaultValue = true) => {
+  if (value === undefined || value === null || value === '') {
+    return defaultValue;
   }
-
-  uploadProof(user, body) {
-    if (!user) throw new common_1.UnauthorizedException('User not found or unauthorized');
-    const dto = new upload_proof_dto_1.UploadProofDto(body);
-    return this.paymentsService.uploadProof(user._id, dto);
+  const normalized = String(value).trim().toLowerCase();
+  if (normalized === 'false' || normalized === '0' || normalized === 'no') {
+    return false;
   }
-
-  getMyPayments(user) {
-    if (!user) throw new common_1.UnauthorizedException('User not found or unauthorized');
-    return this.paymentsService.getByUser(user._id);
+  if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
+    return true;
   }
+  return defaultValue;
 };
-exports.PaymentsController = PaymentsController;
 
-__decorate([
-  (0, common_1.Post)('upload-proof'),
-  (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-  (0, swagger_1.ApiBearerAuth)(),
-  (0, swagger_1.ApiOperation)({ summary: 'Upload a payment proof screenshot' }),
-  (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-  __param(0, (0, current_user_decorator_1.CurrentUser)()),
-  __param(1, (0, common_1.Body)()),
-  __metadata('design:type', Function),
-  __metadata('design:paramtypes', [Object, Object]),
-  __metadata('design:returntype', void 0),
-], PaymentsController.prototype, 'uploadProof', null);
+const databaseEnabled = normalizeBooleanEnv(process.env.MONGODB_ENABLED, true);
 
-__decorate([
-  (0, common_1.Get)('my-payments'),
-  (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-  (0, swagger_1.ApiBearerAuth)(),
-  (0, swagger_1.ApiOperation)({ summary: 'Get my payment proofs' }),
-  __param(0, (0, current_user_decorator_1.CurrentUser)()),
-  __metadata('design:type', Function),
-  __metadata('design:paramtypes', [Object]),
-  __metadata('design:returntype', void 0),
-], PaymentsController.prototype, 'getMyPayments', null);
+const moduleImports = [
+  config_1.ConfigModule.forRoot({ isGlobal: true }),
+  users_module_1.UsersModule,
+  mail_module_1.MailModule,
+  auth_module_1.AuthModule,
+  products_module_1.ProductsModule,
+  reviews_module_1.ReviewsModule,
+  favorites_module_1.FavoritesModule,
+  orders_module_1.OrdersModule,
+  cart_module_1.CartModule,
+  chat_module_1.ChatModule,
+  payments_module_1.PaymentsModule, // ✅ NEW
+];
 
-exports.PaymentsController = PaymentsController = __decorate([
-  (0, swagger_1.ApiTags)('payments'),
-  (0, common_1.Controller)('payments'),
-  __metadata('design:paramtypes', [payments_service_1.PaymentsService]),
-], PaymentsController);
-//# sourceMappingURL=Payments.controller.js.map
+if (databaseEnabled) {
+  moduleImports.push(
+    mongoose_1.MongooseModule.forRootAsync({
+      imports: [config_1.ConfigModule],
+      useFactory: async (configService) => ({
+        uri: configService.get('MONGODB_URI'),
+      }),
+      inject: [config_1.ConfigService],
+    }),
+  );
+} else {
+  common_1.Logger.warn(
+    'MONGODB_ENABLED=false detected. Database connection is disabled; API routes stay visible in Swagger but DB operations will return 503.',
+    'AppModule',
+  );
+}
+
+let AppModule = class AppModule {};
+exports.AppModule = AppModule;
+exports.AppModule = AppModule = __decorate(
+  [
+    (0, common_1.Module)({
+      imports: moduleImports,
+    }),
+  ],
+  AppModule,
+);
+//# sourceMappingURL=app.module.js.map

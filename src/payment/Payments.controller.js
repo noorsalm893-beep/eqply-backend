@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
   if (typeof Reflect === 'object' && typeof Reflect.metadata === 'function') return Reflect.metadata(k, v);
 };
 var __param = (this && this.__param) || function (paramIndex, decorator) {
-  return function (target, key) { decorator(target, key, paramIndex); };
+  return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.PaymentsController = void 0;
@@ -18,7 +18,7 @@ const swagger_1 = require('@nestjs/swagger');
 const payments_service_1 = require('./Payments.service');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
-const upload_proof_dto_1 = require('./upload-proof.dto');
+const upload_proof_dto_1 = require('./dto/upload-proof.dto'); // ✅ FIXED PATH
 
 let PaymentsController = class PaymentsController {
   paymentsService;
