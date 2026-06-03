@@ -18,16 +18,20 @@ const swagger_1 = require('@nestjs/swagger');
 const payments_service_1 = require('./Payments.service');
 const jwt_auth_guard_1 = require('../common/guards/jwt-auth.guard');
 const current_user_decorator_1 = require('../common/decorators/current-user.decorator');
+const upload_proof_dto_1 = require('./upload-proof.dto');
 
 let PaymentsController = class PaymentsController {
   paymentsService;
   constructor(paymentsService) {
     this.paymentsService = paymentsService;
   }
+
   uploadProof(user, body) {
     if (!user) throw new common_1.UnauthorizedException('User not found or unauthorized');
-    return this.paymentsService.uploadProof(user._id, body);
+    const dto = new upload_proof_dto_1.UploadProofDto(body);
+    return this.paymentsService.uploadProof(user._id, dto);
   }
+
   getMyPayments(user) {
     if (!user) throw new common_1.UnauthorizedException('User not found or unauthorized');
     return this.paymentsService.getByUser(user._id);
@@ -64,3 +68,4 @@ exports.PaymentsController = PaymentsController = __decorate([
   (0, common_1.Controller)('payments'),
   __metadata('design:paramtypes', [payments_service_1.PaymentsService]),
 ], PaymentsController);
+//# sourceMappingURL=Payments.controller.js.map

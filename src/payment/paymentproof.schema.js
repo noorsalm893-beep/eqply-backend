@@ -14,31 +14,88 @@ const mongoose_1 = require('@nestjs/mongoose');
 const mongoose_2 = require('mongoose');
 
 let PaymentProof = class PaymentProof {};
+
+// --- Core ---
 __decorate([
   (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'User', required: true }),
   __metadata('design:type', Object),
 ], PaymentProof.prototype, 'userId', void 0);
+
 __decorate([
   (0, mongoose_1.Prop)({ type: mongoose_2.Schema.Types.ObjectId, ref: 'Order', default: null }),
   __metadata('design:type', Object),
 ], PaymentProof.prototype, 'orderId', void 0);
-// Screenshot stored as Base64 string directly in MongoDB
+
 __decorate([
   (0, mongoose_1.Prop)({ required: true }),
   __metadata('design:type', String),
 ], PaymentProof.prototype, 'imageBase64', void 0);
-// pending | approved | rejected
+
 __decorate([
   (0, mongoose_1.Prop)({ default: 'pending' }),
   __metadata('design:type', String),
 ], PaymentProof.prototype, 'status', void 0);
+
 __decorate([
   (0, mongoose_1.Prop)({ default: '' }),
   __metadata('design:type', String),
 ], PaymentProof.prototype, 'note', void 0);
 
+// --- Address ---
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'streetAddress', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'apartmentNumber', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'city', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'postalCode', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'country', void 0);
+
+// --- Payment Details ---
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'paymentMethod', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'transactionId', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', Number),
+], PaymentProof.prototype, 'amountPaid', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: 'USD' }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'currency', void 0);
+
+__decorate([
+  (0, mongoose_1.Prop)({ default: null }),
+  __metadata('design:type', String),
+], PaymentProof.prototype, 'paymentDate', void 0);
+
 exports.PaymentProof = PaymentProof = __decorate([
   (0, mongoose_1.Schema)({ timestamps: true }),
 ], PaymentProof);
+
 exports.PaymentProofSchema = mongoose_1.SchemaFactory.createForClass(PaymentProof);
 //# sourceMappingURL=payment-proof.schema.js.map

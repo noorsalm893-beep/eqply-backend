@@ -23,26 +23,64 @@ let PaymentsService = class PaymentsService {
   constructor(paymentProofModel) {
     this.paymentProofModel = paymentProofModel;
   }
+
   async uploadProof(userId, dto) {
+    // Run DTO validation
+    const errors = dto.validate ? dto.validate() : [];
+    if (errors.length > 0) {
+      throw new common_1.BadRequestException(errors);
+    }
+
     if (!dto.imageBase64) {
       throw new common_1.BadRequestException('imageBase64 is required');
     }
-    const proof = new this.paymentProofModel({
-      userId,
-      orderId: dto.orderId ?? null,
-      imageBase64: dto.imageBase64,
-      note: dto.note ?? '',
-      status: 'pending',
-    });
-    return proof.save();
+
+    try {
+      const proof = new this.paymentProofModel({
+        userId,
+        // Core
+        orderId:        dto.orderId        ?? null,
+        imageBase64:    dto.imageBase64,
+        note:           dto.note           ?? '',
+        status:         'pending',
+        // Address
+        streetAddress:  dto.streetAddress  ?? null,
+        apartmentNumber:dto.apartmentNumber?? null,
+        city:           dto.city           ?? null,
+        postalCode:     dto.postalCode      ?? null,
+        country:        dto.country        ?? null,
+        // Payment details
+        paymentMethod:  dto.paymentMethod  ?? null,
+        transactionId:  dto.transactionId  ?? null,
+        amountPaid:     dto.amountPaid     ?? null,
+        currency:       dto.currency       ?? 'USD',
+        paymentDate:    dto.paymentDate    ?? null,
+      });
+
+      return await proof.save();
+    } catch (err) {
+      console.error('[PaymentsService] uploadProof error:', err);
+      throw new common_1.InternalServerErrorException('Failed to save payment proof');
+    }
   }
+
   async getByUser(userId) {
-    return this.paymentProofModel.find({ userId }).sort({ createdAt: -1 }).exec();
+    try {
+      return await this.paymentProofModel
+        .find({ userId })
+        .sort({ createdAt: -1 })
+        .exec();
+    } catch (err) {
+      console.error('[PaymentsService] getByUser error:', err);
+      throw new common_1.InternalServerErrorException('Failed to fetch payment proofs');
+    }
   }
 };
+
 exports.PaymentsService = PaymentsService;
 exports.PaymentsService = PaymentsService = __decorate([
   (0, common_1.Injectable)(),
   __param(0, (0, mongoose_1.InjectModel)(paymentproof_schema_1.PaymentProof.name)),
   __metadata('design:paramtypes', [mongoose_2.Model]),
 ], PaymentsService);
+//# sourceMappingURL=Payments.service.js.map
