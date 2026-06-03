@@ -31,7 +31,8 @@ const reviews_module_1 = require('./reviews/reviews.module');
 const favorites_module_1 = require('./favorites/favorites.module');
 const orders_module_1 = require('./orders/orders.module');
 const cart_module_1 = require('./cart/cart.module');
-const chat_module_1 = require('./chat/chat.module'); // ✅ NEW
+const chat_module_1 = require('./chat/chat.module');
+const payments_module_1 = require('./payment/Payments.module'); // ✅ NEW
 
 const normalizeBooleanEnv = (value, defaultValue = true) => {
   if (value === undefined || value === null || value === '') {
@@ -46,7 +47,9 @@ const normalizeBooleanEnv = (value, defaultValue = true) => {
   }
   return defaultValue;
 };
+
 const databaseEnabled = normalizeBooleanEnv(process.env.MONGODB_ENABLED, true);
+
 const moduleImports = [
   config_1.ConfigModule.forRoot({ isGlobal: true }),
   users_module_1.UsersModule,
@@ -57,8 +60,10 @@ const moduleImports = [
   favorites_module_1.FavoritesModule,
   orders_module_1.OrdersModule,
   cart_module_1.CartModule,
-  chat_module_1.ChatModule, // ✅ NEW
+  chat_module_1.ChatModule,
+  payments_module_1.PaymentsModule, // ✅ NEW
 ];
+
 if (databaseEnabled) {
   moduleImports.push(
     mongoose_1.MongooseModule.forRootAsync({
@@ -75,6 +80,7 @@ if (databaseEnabled) {
     'AppModule',
   );
 }
+
 let AppModule = class AppModule {};
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate(
