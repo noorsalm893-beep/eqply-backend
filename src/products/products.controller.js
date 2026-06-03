@@ -45,25 +45,30 @@ let ProductsController = class ProductsController {
   constructor(productsService) {
     this.productsService = productsService;
   }
+
   getBestDeals() {
     return this.productsService.getBestDeals();
   }
-  // ✅ UPGRADED — accepts optional filter/sort query params
+
   getAllProducts(query) {
     return this.productsService.getAllProducts(query);
   }
+
   getCategories() {
     return this.productsService.getCategories();
   }
+
   searchProducts(query) {
     return this.productsService.searchProducts(query);
   }
+
   getMyProducts(user) {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
     }
     return this.productsService.getProductsByVendor(user._id);
   }
+
   createProduct(user, body) {
     if (!user) {
       throw new common_1.UnauthorizedException('User not found or unauthorized');
@@ -72,6 +77,7 @@ let ProductsController = class ProductsController {
   }
 };
 exports.ProductsController = ProductsController;
+
 __decorate(
   [
     (0, common_1.Get)('best-deals'),
@@ -143,6 +149,7 @@ __decorate(
     (0, common_1.Post)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new product with Base64 image' }),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),

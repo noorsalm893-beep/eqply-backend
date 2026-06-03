@@ -43,6 +43,7 @@ let ProductsService = class ProductsService {
   constructor(productModel) {
     this.productModel = productModel;
   }
+
   getModelOrThrow() {
     if (!this.productModel) {
       throw new common_1.ServiceUnavailableException(
@@ -51,23 +52,19 @@ let ProductsService = class ProductsService {
     }
     return this.productModel;
   }
+
   async getBestDeals() {
-    return this.getModelOrThrow()
-      .find({ bestDeal: true })
-      .limit(4)
-      .exec();
+    return this.getModelOrThrow().find({ bestDeal: true }).limit(4).exec();
   }
-  // ✅ UPGRADED — supports filtering & sorting via query params
+
   async getAllProducts(query = {}) {
     const filter = {};
 
-    // --- Filtering ---
     if (query.category) {
       filter.category = query.category;
     }
 
     if (query.type) {
-      // 'Sale' maps to buyAvailable, 'Rental' maps to rentAvailable
       if (query.type === 'Sale') {
         filter.buyAvailable = true;
       } else if (query.type === 'Rental') {
@@ -83,8 +80,7 @@ let ProductsService = class ProductsService {
       if (query.maxPrice !== undefined) filter.buyPrice.$lte = query.maxPrice;
     }
 
-    // --- Sorting ---
-    let sortOption = { createdAt: -1 }; // default: newest
+    let sortOption = { createdAt: -1 };
     if (query.sort === 'lowest') {
       sortOption = { buyPrice: 1 };
     } else if (query.sort === 'highest') {
@@ -95,9 +91,11 @@ let ProductsService = class ProductsService {
 
     return this.getModelOrThrow().find(filter).sort(sortOption).exec();
   }
+
   async getCategories() {
     return this.getModelOrThrow().distinct('category').exec();
   }
+
   async searchProducts(query) {
     if (!query || query.trim() === '') {
       return this.getModelOrThrow().find().exec();
@@ -111,34 +109,57 @@ let ProductsService = class ProductsService {
       })
       .exec();
   }
+
   async getProductsByVendor(vendorId) {
     return this.getModelOrThrow().find({ 'vendor.vendorId': vendorId }).exec();
   }
+
   async createProduct(createProductDto, user) {
+    // ✅ Validate that picture is a Base64 string
+    if (!createProductDto.picture) {
+      throw new common_1.BadRequestException('picture is required');
+    }
+    if (!createProductDto.picture.startsWith('data:image/')) {
+      throw new common_1.BadRequestException(
+        'picture must be a Base64 image string (e.g. data:image/jpeg;base64,...)',
+      );
+    }
+
     const product = new (this.getModelOrThrow())({
-      picture: createProductDto.picture,
-      name: createProductDto.name,
-      description: createProductDto.description,
-      category: createProductDto.category,
-      rentAvailable: createProductDto.rentAvailable ?? false,
-      buyAvailable: createProductDto.buyAvailable ?? false,
-      rentOptions: createProductDto.rentOptions ?? [],
-      buyPrice: createProductDto.buyPrice,
-      bestDeal: false,
-      liked: false,
+      picture:        createProductDto.picture,       // ✅ Full Base64 saved to MongoDB
+      name:           createProductDto.name,
+      description:    createProductDto.description,
+      category:       createProductDto.category,
+      rentAvailable:  createProductDto.rentAvailable  ?? false,
+      buyAvailable:   createProductDto.buyAvailable   ?? false,
+      rentOptions:    createProductDto.rentOptions    ?? [],
+      buyPrice:       createProductDto.buyPrice,
+      bestDeal:       false,
+      liked:          false,
       vendor: {
-        vendorId: user._id.toString(),
+        vendorId:   user._id.toString(),
         vendorName: user.name,
       },
     });
-    return product.save();
+
+    try {
+      return await product.save();
+    } catch (err) {
+      console.error('[ProductsService] createProduct error:', err);
+      throw new common_1.InternalServerErrorException('Failed to save product');
+    }
   }
 };
+
 exports.ProductsService = ProductsService;
 exports.ProductsService = ProductsService = __decorate(
   [
     (0, common_1.Injectable)(),
-    __param(0, (0, mongoose_1.InjectModel)(product_schema_1.Product.name), (0, common_1.Optional)()),
+    __param(
+      0,
+      (0, mongoose_1.InjectModel)(product_schema_1.Product.name),
+      (0, common_1.Optional)(),
+    ),
     __metadata('design:paramtypes', [mongoose_2.Model]),
   ],
   ProductsService,
